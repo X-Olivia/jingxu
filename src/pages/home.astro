@@ -1,0 +1,55 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { SITE_TITLE, SITE_TAGLINE, SITE_DESCRIPTION } from '../consts';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import Head from '@src/assets/img/head.jpg';
+import { projects } from '../data/projects';
+import ProjectList from '../components/ProjectList.astro';
+import PersonalBio from '../components/PersonalBio.astro';
+import PostItem from '../components/PostItem.astro';
+
+const top6Projects = projects.slice(0, 6);
+const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
+	.sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={SITE_TITLE + ' - ' + SITE_TAGLINE} description={SITE_DESCRIPTION}>
+	<div class='container'>
+		<div class='w-full md:flex md:items-center gap-12 mb-10'>
+			<div class='text-pretty leading-9 flex-1'>
+				<h1 class='text-4xl font-bold mb-4'>Hi There 👋,   Jing Here!</h1>
+				<PersonalBio />
+			</div>
+			<Image
+				src={Head}
+				alt='Jing'
+				width='260'
+				loading='eager'
+				class='h-[260px] w-[260px] object-cover rounded-3xl mx-4 md:mx-0'
+			/>
+		</div>
+		<main>
+			<div class='mt-6 mb-12'>
+				<div class='flex justify-between gap-2 border-b mb-1 dark:border-b-zinc-700'>
+					<h2 class='text-lg font-bold mb-3'>Recent Posts</h2>
+					<a href={`${base}posts/`} class='inline-block py-2 underline dark:prose-invert'>All posts &raquo;</a>
+				</div>
+				{recentPosts.length > 0 ? (
+					recentPosts.map((post) => <PostItem post={post} />)
+				) : (
+					<p class='py-6 text-zinc-500 dark:text-zinc-400'>No posts yet.</p>
+				)}
+			</div>
+			<div>
+				<div class='flex justify-between gap-2 mb-1'>
+					<h2 class='text-lg font-bold mb-3'>My Projects</h2>
+					<a href={`${base}projects/`} class='inline-block py-2 underline dark:prose-invert'>All projects &raquo;</a>
+				</div>
+				<ProjectList projects={top6Projects} limit={6} />
+			</div>
+		</main>
+	</div>
+</BaseLayout>

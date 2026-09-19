@@ -1,0 +1,75 @@
+backend:
+  name: github
+  repo: X-Olivia/My_Website
+  branch: main
+  base_url: https://decap-proxy.jing1112.workers.dev
+  auth_endpoint: /auth
+
+local_backend: true
+
+site_url: https://x-olivia.github.io/My_Website/
+display_url: https://x-olivia.github.io/My_Website/
+
+media_folder: public/uploads
+public_folder: /My_Website/uploads
+
+collections:
+  - name: blog
+    label: Posts
+    label_singular: Post
+    folder: src/content/blog
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    preview_path: "{{slug}}"
+    summary: "{{title}} — {{pubDate}}"
+    sortable_fields:
+      - pubDate
+      - title
+    fields:
+      - label: Title
+        name: title
+        widget: string
+      - label: SEO title
+        name: seoTitle
+        widget: string
+        required: false
+        hint: Optional browser and search-result title.
+      - label: Description
+        name: description
+        widget: text
+      - label: Publish date
+        name: pubDate
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: Updated date
+        name: updatedDate
+        widget: datetime
+        required: false
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        default: []
+        field:
+          label: Tag
+          name: tag
+          widget: string
+      - label: Cover image
+        name: coverImage
+        widget: image
+        required: false
+      - label: Draft
+        name: draft
+        widget: boolean
+        default: false
+      - label: Body
+        name: body
+        widget: markdown

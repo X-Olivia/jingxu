@@ -1,133 +1,87 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
-import Prose from '../components/Prose.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
+import Prose from '../components/Prose.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import AboutTheAuthor from '../components/widgets/AboutTheAuthor.astro';
-import TableOfContent from '../components/widgets/TableOfContent.astro';
-import { slugify } from '../utils';
-import { loadEnv } from 'vite';
-import { render } from 'astro:content';
-
-const { GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID } = loadEnv(process.env.NODE_ENV || 'production', process.cwd(), '');
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
-	return posts.map((post: any) => ({
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	return posts.map((post) => ({
 		params: { slug: post.id },
-		props: post
+		props: { post }
 	}));
 }
-type Props = CollectionEntry<'blog'>;
-const post = Astro.props;
-const {
-	data: { title, seoTitle, description, coverImage, pubDate, updatedDate, tags }
-} = post;
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
 const { Content, headings } = await render(post);
+const { title, seoTitle, description, pubDate, updatedDate, tags, coverImage } = post.data;
+const base = import.meta.env.BASE_URL;
+const tableOfContents = headings.filter(({ depth }) => depth === 2 || depth === 3);
 ---
 
-<BaseLayout title={seoTitle || title} description={description} image={coverImage?.src || undefined}>
-	<div class='container lg:flex gap-10'>
-		<main
-			class='overflow-hidden grow'
-		>
+<BaseLayout title={seoTitle || title} description={description} image={coverImage}>
+	<div class='container lg:grid lg:grid-cols-[minmax(0,1fr)_250px] lg:gap-12'>
+		<main class='min-w-0 overflow-hidden'>
 			<article>
-				<Prose>
-					<div>
-						<h1 class='!my-1 leading-tight'>{title}</h1>
-            <div class='text-sm font-[500] mt-2 sm:mt-0 py-1 md:text-right flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center'>
-              {
-                <div class='flex gap-2'>
-                  {
-                    (tags || [] )?.map((tag: string) => (
-                      <a
-                        class='border border-zinc-300 dark:border-zinc-700 rounded-2xl
-                          text-sm text-zinc-700 dark:text-zinc-300 no-underline px-2 py-0.5
-                          transition-all duration-700
-                        hover:border-zinc-700 dark:hover:border-zinc-300'
-                        href={`/tags/${slugify(tag)}`}>
-                        {tag}
-                      </a>
-                    ))
-                  }
-                </div>
-              }
-              <div>
-                {
-                  updatedDate ?
-                    <>Updated on <strong><FormattedDate date={updatedDate} /></strong></>
-                  :
-                    <>Published on <strong><FormattedDate date={pubDate} /></strong></>
-                }
-              </div>
-            </div>
+				<header class='mb-8'>
+					<h1 class='text-balance text-4xl font-black leading-tight tracking-tight sm:text-5xl'>{title}</h1>
+					<div class='mt-5 flex flex-col gap-3 border-b border-zinc-200 pb-5 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400 sm:flex-row sm:items-center sm:justify-between'>
+						<ul class='flex flex-wrap gap-2' aria-label='Post tags'>
+							{tags.map((tag) => (
+								<li>
+									<a
+										class='rounded-full border border-zinc-300 px-2.5 py-1 no-underline transition hover:border-zinc-700 dark:border-zinc-700 dark:hover:border-zinc-300'
+										href={`${base}tags/${encodeURIComponent(tag.toLowerCase())}/`}
+									>
+										{tag}
+									</a>
+								</li>
+							))}
+						</ul>
+						<p class='shrink-0'>
+							{updatedDate ? (
+								<>Updated <strong class='font-semibold text-zinc-700 dark:text-zinc-200'><FormattedDate date={updatedDate} /></strong></>
+							) : (
+								<>Published <strong class='font-semibold text-zinc-700 dark:text-zinc-200'><FormattedDate date={pubDate} /></strong></>
+							)}
+						</p>
 					</div>
-          <div class='py-3 overflow-hidden'>
-            {coverImage && <Image class='rounded-3xl w-full m-0 lg:mb-2' src={coverImage} alt={title} loading='eager' />}
-          </div>
+				</header>
+
+				{coverImage && (
+					<img
+						src={coverImage}
+						alt=''
+						class='mb-8 aspect-[16/9] w-full rounded-3xl object-cover'
+						loading='eager'
+					/>
+				)}
+
+				<Prose>
 					<Content />
 				</Prose>
-        {
-          GISCUS_REPO &&
-            <script
-              id='giscus-script'
-              is:inline
-              src='https://giscus.app/client.js'
-              data-repo={GISCUS_REPO}
-              data-repo-id={GISCUS_REPO_ID}
-              data-category={GISCUS_CATEGORY}
-              data-category-id={GISCUS_CATEGORY_ID}
-              data-mapping='pathname'
-              data-strict='0'
-              data-reactions-enabled='1'
-              data-emit-metadata='0'
-              data-input-position='bottom'
-              data-theme='preferred_color_scheme'
-              data-lang='en'
-              crossorigin='anonymous'
-              async></script>
-        }
-
 			</article>
 		</main>
-    <div class='shrink-0 w-[280px] hidden md:block'>
-      <div class='mb-4'>
-				<AboutTheAuthor />
-			</div>
-			<TableOfContent headings={headings} />
-		</div>
+
+		{tableOfContents.length > 0 && (
+			<aside class='hidden lg:block'>
+				<nav class='sticky top-24 border-l border-zinc-200 pl-5 dark:border-zinc-700' aria-label='Table of contents'>
+					<p class='mb-3 text-xs font-bold uppercase tracking-[0.16em] text-zinc-500'>On this page</p>
+					<ul class='space-y-2 text-sm text-zinc-600 dark:text-zinc-300'>
+						{tableOfContents.map((heading) => (
+							<li class:list={{ 'pl-3': heading.depth === 3 }}>
+								<a class='transition hover:text-cyan-700 dark:hover:text-cyan-300' href={`#${heading.slug}`}>
+									{heading.text}
+								</a>
+							</li>
+						))}
+					</ul>
+				</nav>
+			</aside>
+		)}
 	</div>
 </BaseLayout>
-
-<script async is:inline>
-	const anchors = document.querySelectorAll('.prose h2[id], .prose h3[id]');
-	const links = document.querySelectorAll('nav.toc ul li a');
-
-	function observeToc() {
-		if (typeof anchors != 'undefined' && anchors != null && typeof links != 'undefined' && links != null) {
-			let scrollTop = window.scrollY;
-
-			// highlight the last scrolled-to: set everything inactive first
-			for (const link of links) {
-				link.classList.add('border-transparent', 'text-inherit');
-				link.classList.remove('bg-[var(--background-surface-color)]', 'border-[var(--soft-border-color)]', 'text-[var(--link-color)]');
-			}
-			// then iterate backwards, on the first match highlight it and break
-			for (var i = anchors.length - 1; i >= 0; i--) {
-				if (scrollTop > anchors[i].offsetTop - 80) {
-					links[i].classList.remove('border-transparent', 'text-inherit');
-					links[i].classList.add('bg-[var(--background-surface-color)]', 'border-[var(--soft-border-color)]', 'text-[var(--link-color)]');
-					break;
-				}
-			}
-		}
-	}
-
-	window.addEventListener('scroll', (event) => {
-		observeToc(event);
-	});
-	window.addEventListener('hashchange', (event) => {
-		observeToc(event);
-	});
-</script>

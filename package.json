@@ -1,7 +1,8 @@
 {
-  "name": "devolio",
+  "name": "jing-portfolio",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

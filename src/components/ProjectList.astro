@@ -1,73 +1,150 @@
 ---
-import { Image } from 'astro:assets';
-import type { Project } from '../pages/projects/projects'
-import { kFormatter } from '../utils'
-import GithubWhite from '@src/assets/img/github-mark-white.svg';
-import GithubBlack from '@src/assets/img/github-mark.svg';
+import type { Project } from '../data/projects';
 
-const { projects } = Astro.props
-
+const { projects, limit } = Astro.props;
 ---
-<div class="grid grid-cols-12 gap-5">
-  {
-    projects.map((project: Project) => 
-      <div class="col-span-12 sm:col-span-6 lg:col-span-4 border dark:border-zinc-700 rounded-xl shadow-sm p-5">
-        <div class="flex justify-between items-center">
-          <div class='flex gap-2'>
-            {
-              (project.tags || [] )?.map((tag: string) => (
-                <span
-                  class='border border-zinc-300 dark:border-zinc-700 rounded-2xl
-                    text-sm text-zinc-700 dark:text-zinc-300 no-underline px-2 py-0.5
-                    transition-all duration-700
-                  hover:border-zinc-700 dark:hover:border-zinc-300'
-                  >
-                  {tag}
-                </span>
-              ))
-            }
-          </div>
 
-          {project.stargazers_count !== undefined && (
-            <div class='shrink-0'>
-              <a
-                href={project.html_url}
-                target="_blank"
-                class='border border-zinc-300 dark:border-zinc-700 rounded-2xl
-                    text-xs text-zinc-700 dark:text-zinc-300 no-underline px-2 py-0.5
-                    transition-all duration-700
-                  hover:border-zinc-700 dark:hover:border-zinc-300
-                    flex items-center gap-1
-              '>
-                <Image src={GithubBlack} height={12} class='dark:hidden' alt='Github stars' />
-                <Image src={GithubWhite} height={12} class='hidden dark:block' alt='Github stars' />
-                {kFormatter(project.stargazers_count)} stars
-              </a>
-            </div>
-          )}
-        </div>
-        <h3 class="font-semibold my-2">
-          <a class="underline" href={project.demoLink} target="_blank" rel={project.demoLinkRel}>{project.name}</a>
-        </h3>
-        <div class="line-clamp-2 text-zinc-600 dark:text-zinc-300 mb-4 min-h-[50px]">
-          <p>{project.description}</p>
-        </div>
-        <div class="flex justify-end gap-3">
-          {
-            project.postLink &&
-            <a class="underline flex items-center gap-2" href={project.postLink}>
-              Article
-            </a>
-          }
-          {
-            project.demoLink &&  // This line adds the conditional check for the Demo link
-            <a class="underline flex items-center gap-2" href={project.demoLink} target="_blank" rel={project.demoLinkRel}>
-              Demo 
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-            </a>
-          }
-        </div>
-      </div>
-    )
-  }
+<div class='grid grid-cols-12 gap-5' data-github-projects data-limit={limit ?? ''}>
+	{projects.map((project: Project) => (
+		<div class='col-span-12 sm:col-span-6 lg:col-span-4 border dark:border-zinc-700 rounded-xl shadow-sm p-5'>
+			<div class='flex justify-between items-center'>
+				<div class='flex gap-2'>
+					{(project.tags || []).map((tag: string) => (
+						<span class='border border-zinc-300 dark:border-zinc-700 rounded-2xl text-sm text-zinc-700 dark:text-zinc-300 no-underline px-2 py-0.5 transition-all duration-700 hover:border-zinc-700 dark:hover:border-zinc-300'>
+							{tag}
+						</span>
+					))}
+				</div>
+			</div>
+			<h3 class='font-semibold my-2'>
+				<a class='underline' href={project.demoLink || project.repoLink} target='_blank' rel='noopener noreferrer'>{project.name}</a>
+			</h3>
+			<div class='line-clamp-2 text-zinc-600 dark:text-zinc-300 mb-4 min-h-[50px]'>
+				{project.description && <p>{project.description}</p>}
+			</div>
+			<div class='flex justify-end gap-3'>
+				<a class='underline flex items-center gap-2' href={project.repoLink} target='_blank' rel='noopener noreferrer'>
+					GitHub
+					<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 3h6v6'/><path d='M10 14 21 3'/><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/></svg>
+				</a>
+				{project.demoLink && (
+					<a class='underline flex items-center gap-2' href={project.demoLink} target='_blank' rel='noopener noreferrer'>Live site</a>
+				)}
+			</div>
+		</div>
+	))}
 </div>
+
+<script>
+	type GitHubRepository = {
+		name: string;
+		description: string | null;
+		language: string | null;
+		html_url: string;
+		homepage: string | null;
+		fork: boolean;
+		updated_at: string;
+	};
+
+	const repositoryRequest = fetch('https://api.github.com/users/X-Olivia/repos?per_page=100&sort=updated', {
+		headers: {
+			Accept: 'application/vnd.github+json',
+			'X-GitHub-Api-Version': '2022-11-28'
+		}
+	}).then(async (response) => {
+		if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
+		return response.json() as Promise<GitHubRepository[]>;
+	});
+
+	function createExternalIcon() {
+		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		svg.setAttribute('width', '14');
+		svg.setAttribute('height', '14');
+		svg.setAttribute('viewBox', '0 0 24 24');
+		svg.setAttribute('fill', 'none');
+		svg.setAttribute('stroke', 'currentColor');
+		svg.setAttribute('stroke-width', '2');
+		svg.setAttribute('stroke-linecap', 'round');
+		svg.setAttribute('stroke-linejoin', 'round');
+		for (const pathData of ['M15 3h6v6', 'M10 14 21 3', 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6']) {
+			const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+			path.setAttribute('d', pathData);
+			svg.append(path);
+		}
+		return svg;
+	}
+
+	function createProjectCard(repository: GitHubRepository) {
+		const card = document.createElement('div');
+		card.className = 'col-span-12 sm:col-span-6 lg:col-span-4 border dark:border-zinc-700 rounded-xl shadow-sm p-5';
+
+		const tagRow = document.createElement('div');
+		tagRow.className = 'flex justify-between items-center';
+		const tags = document.createElement('div');
+		tags.className = 'flex gap-2';
+		if (repository.language) {
+			const tag = document.createElement('span');
+			tag.className = 'border border-zinc-300 dark:border-zinc-700 rounded-2xl text-sm text-zinc-700 dark:text-zinc-300 no-underline px-2 py-0.5 transition-all duration-700 hover:border-zinc-700 dark:hover:border-zinc-300';
+			tag.textContent = repository.language;
+			tags.append(tag);
+		}
+		tagRow.append(tags);
+
+		const heading = document.createElement('h3');
+		heading.className = 'font-semibold my-2';
+		const titleLink = document.createElement('a');
+		titleLink.className = 'underline';
+		titleLink.href = repository.homepage || repository.html_url;
+		titleLink.target = '_blank';
+		titleLink.rel = 'noopener noreferrer';
+		titleLink.textContent = repository.name;
+		heading.append(titleLink);
+
+		const description = document.createElement('div');
+		description.className = 'line-clamp-2 text-zinc-600 dark:text-zinc-300 mb-4 min-h-[50px]';
+		if (repository.description) {
+			const paragraph = document.createElement('p');
+			paragraph.textContent = repository.description;
+			description.append(paragraph);
+		}
+
+		const links = document.createElement('div');
+		links.className = 'flex justify-end gap-3';
+		const githubLink = document.createElement('a');
+		githubLink.className = 'underline flex items-center gap-2';
+		githubLink.href = repository.html_url;
+		githubLink.target = '_blank';
+		githubLink.rel = 'noopener noreferrer';
+		githubLink.append('GitHub', createExternalIcon());
+		links.append(githubLink);
+
+		if (repository.homepage) {
+			const liveLink = document.createElement('a');
+			liveLink.className = 'underline flex items-center gap-2';
+			liveLink.href = repository.homepage;
+			liveLink.target = '_blank';
+			liveLink.rel = 'noopener noreferrer';
+			liveLink.textContent = 'Live site';
+			links.append(liveLink);
+		}
+
+		card.append(tagRow, heading, description, links);
+		return card;
+	}
+
+	repositoryRequest
+		.then((repositories) => {
+			const publicProjects = repositories
+				.filter((repository) => !repository.fork)
+				.sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+
+			document.querySelectorAll<HTMLElement>('[data-github-projects]').forEach((container) => {
+				const requestedLimit = Number(container.dataset.limit);
+				const visibleProjects = requestedLimit > 0 ? publicProjects.slice(0, requestedLimit) : publicProjects;
+				container.replaceChildren(...visibleProjects.map(createProjectCard));
+			});
+		})
+		.catch((error) => {
+			console.warn('GitHub projects could not be refreshed; using the built-in project list.', error);
+		});
+</script>
