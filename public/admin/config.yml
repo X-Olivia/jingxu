@@ -1,17 +1,17 @@
 backend:
   name: github
-  repo: X-Olivia/My_Website
+  repo: X-Olivia/jingxu
   branch: main
   base_url: https://decap-proxy.jing1112.workers.dev
   auth_endpoint: /auth
 
 local_backend: true
 
-site_url: https://x-olivia.github.io/My_Website/
-display_url: https://x-olivia.github.io/My_Website/
+site_url: https://x-olivia.github.io/jingxu/
+display_url: https://x-olivia.github.io/jingxu/
 
 media_folder: public/uploads
-public_folder: /My_Website/uploads
+public_folder: /jingxu/uploads
 
 collections:
   - name: blog

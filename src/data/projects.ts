@@ -43,8 +43,8 @@ export const projects: Project[] = [
     tags: ['TypeScript']
   },
   {
-    name: 'My_Website',
-    repoLink: 'https://github.com/X-Olivia/My_Website'
+    name: 'jingxu',
+    repoLink: 'https://github.com/X-Olivia/jingxu'
   },
   {
     name: 'Ymir',

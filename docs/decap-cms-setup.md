@@ -1,7 +1,7 @@
 # Decap CMS deployment setup
 
 The public site remains static on GitHub Pages. Decap writes Markdown to
-`X-Olivia/My_Website` through GitHub's API, and the existing deployment
+`X-Olivia/jingxu` through GitHub's API, and the existing deployment
 workflow rebuilds the site after each commit.
 
 ## 1. Deploy the OAuth proxy
@@ -57,14 +57,14 @@ base_url: https://REPLACE-WITH-YOUR-WORKER.workers.dev
 with the deployed Worker URL. Do not append `/auth`; `auth_endpoint: /auth`
 already supplies that path.
 
-Commit and push the change to the `main` branch of `X-Olivia/My_Website`.
+Commit and push the change to the `main` branch of `X-Olivia/jingxu`.
 After GitHub Pages finishes deploying, open:
 
 ```text
-https://x-olivia.github.io/My_Website/admin/
+https://x-olivia.github.io/jingxu/admin/
 ```
 
-Only GitHub users with write access to `X-Olivia/My_Website` can publish.
+Only GitHub users with write access to `X-Olivia/jingxu` can publish.
 
 ## 4. Optional local CMS
 
