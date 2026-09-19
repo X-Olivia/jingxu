@@ -16,12 +16,23 @@ const menu = [
 ];
 ---
 
-<header
-	id='site-header'
-	class:list={['flex items-center w-full transition duration-300 z-[999] border-[var(--soft-border-color)]']}
->
+<header id='site-header' class='w-full'>
+	<div class='site-nav'>
+		<div class='site-nav-bar'>
+			<div class='px-1.5 text-sm md:px-2.5'>
+				<HeaderLink class='flex items-center px-1 py-2.5 md:px-0 md:py-3' href={homeHref} aria-label='Home'>
+					<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8'/><path d='M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>
+				</HeaderLink>
+			</div>
+			{menu.map((item) => (
+				<div class='px-1.5 text-sm md:px-2.5'>
+					<HeaderLink class='flex items-center px-1 py-2.5 md:px-0 md:py-3' href={item.link}>{item.label}</HeaderLink>
+				</div>
+			))}
+		</div>
+	</div>
 	<div class='container'>
-		<nav class='flex gap-4 items-center justify-between py-3'>
+		<nav class='flex items-center justify-between gap-3 py-3'>
 			<div class='flex items-center gap-2.5'>
 				<h2 class='m-0'>
 					<a href={homeHref} class='flex items-center text-xl font-black uppercase'>
@@ -42,14 +53,14 @@ const menu = [
 					<Image src={Tangle} alt='' width={64} height={32} class='h-8 w-16 object-cover' />
 				</a>
 			</div>
-			<div class='flex'>
-				<a class='p-3 dark:hidden' href='https://github.com/X-Olivia' target='_blank' rel='noopener noreferrer'>
+			<div class='flex items-center'>
+				<a class='p-2 dark:hidden md:p-3' href='https://github.com/X-Olivia' target='_blank' rel='noopener noreferrer'>
 					<Image src={GithubBlack} width={24} height={24} alt='GitHub logo' />
 				</a>
-				<a class='p-3 hidden dark:block' href='https://github.com/X-Olivia' target='_blank' rel='noopener noreferrer'>
+				<a class='p-2 hidden dark:block md:p-3' href='https://github.com/X-Olivia' target='_blank' rel='noopener noreferrer'>
 					<Image src={GithubWhite} width={24} height={24} alt='GitHub logo' />
 				</a>
-				<button class='p-3' id='themeToggle' aria-label='Theme mode'>
+				<button class='p-2 md:p-3' id='themeToggle' aria-label='Theme mode'>
 					<svg class='sun' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
 						<circle cx='12' cy='12' r='4'></circle><path d='M12 2v2'></path><path d='M12 20v2'></path><path d='m4.93 4.93 1.41 1.41'></path><path d='m17.66 17.66 1.41 1.41'></path><path d='M2 12h2'></path><path d='M20 12h2'></path><path d='m6.34 17.66-1.41 1.41'></path><path d='m19.07 4.93-1.41 1.41'></path>
 					</svg>
@@ -59,21 +70,72 @@ const menu = [
 				</button>
 			</div>
 		</nav>
-		<div class='fixed top-3 w-auto max-w-full px-3 left-1/2 -translate-x-1/2 z-[999]'>
-			<div class='flex px-2.5 bg-white/90 dark:bg-zinc-900/75 backdrop-blur-md leading-tight rounded-full border dark:border-zinc-700'>
-				<div class='px-2.5 text-sm'>
-					<HeaderLink class='py-3 flex items-center' href={homeHref} aria-label='Home'>
-						<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8'/><path d='M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>
-					</HeaderLink>
-				</div>
-				{menu.map((item) => (
-					<div class='px-2.5 text-sm'>
-						<HeaderLink class='py-3 flex items-center' href={item.link}>{item.label}</HeaderLink>
-					</div>
-				))}
-			</div>
-		</div>
 	</div>
+
+	<style>
+		.site-nav {
+			position: fixed;
+			top: 0;
+			right: 0;
+			left: 0;
+			z-index: 999;
+			padding-top: env(safe-area-inset-top, 0px);
+			background: rgb(255 255 255 / 0.96);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+		}
+
+		.site-nav-bar {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			max-width: 100%;
+			padding: 0 0.5rem;
+			border-bottom: 1px solid rgb(228 228 231);
+			line-height: 1.25;
+		}
+
+		:global(html.dark) .site-nav {
+			background: rgb(24 24 27 / 0.94);
+		}
+
+		:global(html.dark) .site-nav-bar {
+			border-bottom-color: rgb(63 63 70);
+		}
+
+		@media (min-width: 768px) {
+			.site-nav {
+				top: 0.75rem;
+				right: auto;
+				left: 50%;
+				width: auto;
+				max-width: calc(100% - 1.5rem);
+				padding-top: 0;
+				background: transparent;
+				backdrop-filter: none;
+				-webkit-backdrop-filter: none;
+				transform: translateX(-50%);
+			}
+
+			.site-nav-bar {
+				padding: 0 0.625rem;
+				border: 1px solid rgb(228 228 231);
+				border-radius: 999px;
+				background: rgb(255 255 255 / 0.9);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+			}
+
+			:global(html.dark) .site-nav {
+				background: transparent;
+			}
+
+			:global(html.dark) .site-nav-bar {
+				border-color: rgb(63 63 70);
+				background: rgb(24 24 27 / 0.75);
+			}
+		}
+	</style>
 
 	<style is:global>
 		#themeToggle .moon { display: none; }
