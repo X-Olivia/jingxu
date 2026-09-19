@@ -253,14 +253,13 @@ const homeHref = `${base}home/`;
 			};
 
 			const geometry = () => {
-				const leftPadding = Math.min(Math.max(width * 0.065, 28), 72);
-				const rightPadding = Math.max(leftPadding, Math.min(150, width * 0.25));
-				const usableWidth = width - leftPadding - rightPadding;
+				const horizontalPadding = Math.min(Math.max(width * 0.1, 22), 72);
+				const usableWidth = Math.max(width - horizontalPadding * 2, 1);
 				return {
-					left: leftPadding,
-					right: width - rightPadding,
+					left: (width - usableWidth) / 2,
+					right: (width + usableWidth) / 2,
 					usableWidth,
-					baseline: height * 0.54,
+					baseline: height * 0.5,
 				};
 			};
 
