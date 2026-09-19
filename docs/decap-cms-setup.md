@@ -61,7 +61,7 @@ Commit and push the change to the `main` branch of `X-Olivia/jingxu`.
 After GitHub Pages finishes deploying, open:
 
 ```text
-https://x-olivia.github.io/jingxu/admin/
+https://jingxu.dev/admin/
 ```
 
 Only GitHub users with write access to `X-Olivia/jingxu` can publish.

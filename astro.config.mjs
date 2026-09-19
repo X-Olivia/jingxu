@@ -6,14 +6,9 @@ import { autoNewTabExternalLinks } from './src/autoNewTabExternalLinks';
 
 import partytown from "@astrojs/partytown";
 
-const repository = process.env.GITHUB_REPOSITORY?.split('/')[1];
-const isUserSite = repository?.toLowerCase() === 'x-olivia.github.io';
-const base = repository && !isUserSite ? `/${repository}/` : '/';
-
-// https://astro.build/config
 export default defineConfig({
-  site: 'https://x-olivia.github.io',
-  base,
+  site: 'https://jingxu.dev',
+  base: '/',
   devToolbar: {
     enabled: false
   },
@@ -21,7 +16,7 @@ export default defineConfig({
   markdown: {
     extendDefaultPlugins: true,
     rehypePlugins: [[autoNewTabExternalLinks, {
-      domain: 'x-olivia.github.io'
+      domain: 'jingxu.dev'
     }]]
   }
 });
