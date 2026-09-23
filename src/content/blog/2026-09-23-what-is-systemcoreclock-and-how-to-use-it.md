@@ -22,9 +22,9 @@ While reading an embedded systems example, I came across several terms :
 
 A useful way to see the relationship is:
 
-![](/uploads/截屏2026-09-23-13.19.46.png)
+![](/uploads/level.png)
 
-This article records how these pieces fit together.
+
 
 - - -
 
@@ -40,10 +40,6 @@ SystemCoreClock = 16000000;
 
 which means that the current system frequency is 16 MHz.
 
-One important point is that `SystemCoreClock` is **not hardware**.
-
-It is a software variable that records information about the clock frequency used by the system.
-
 CMSIS standardizes this variable so that software written for different Cortex-M based microcontrollers can use a common interface instead of every manufacturer inventing a different name.
 
 - - -
@@ -54,7 +50,7 @@ CMSIS stands for:
 
 **Cortex Microcontroller Software Interface Standard**
 
-CMSIS-Core is the part of CMSIS that provides a standardized software interface for Arm Cortex-M processors.
+CMSIS-Core is the part of CMSIS that **provides a standardized software interface** for Arm Cortex-M processors.
 
 It defines common names, data structures, functions, and interfaces that software can use to interact with Cortex-M processor features.
 
@@ -68,10 +64,6 @@ SysTick->CTRL
 SysTick->LOAD
 SysTick->VAL
 ```
-
-CMSIS-Core itself is **software**, not hardware.
-
-Its purpose is to give C programs a standardized way to access processor features.
 
 - - -
 
@@ -458,8 +450,6 @@ SysTick->LOAD
 ```
 
 and functions such as:
-
-
 
 ```c
 SysTickPeriodSet()
