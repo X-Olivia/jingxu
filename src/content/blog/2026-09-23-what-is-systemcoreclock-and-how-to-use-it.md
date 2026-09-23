@@ -9,6 +9,7 @@ tags:
   - EnbeddedSystem
   - ARM CortexTM M3
   - C program
+  - Interrupt
 draft: false
 ---
 While reading an embedded systems example, I came across several terms :
