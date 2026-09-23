@@ -76,19 +76,15 @@ They are optimized for properties such as:
 * predictable interrupt behavior
 * real-time control
 
-For example, the Cortex-M3 processor used in this exercise is based on the Armv7-M architecture.
+For example, the Cortex-M3 processor used in this exercise is based on the Armv7-M architecture. 
 
-Inside a Cortex-M processor are several hardware components.
-
-One of them is the **SysTick timer**.
+Inside a Cortex-M processor are several hardware components. One of them is the **SysTick timer**.
 
 - - -
 
 ## What is SysTick?
 
-SysTick is a **hardware timer built into the Cortex-M processor**.
-
-It contains a **24-bit decrementing counter**.
+SysTick is a **hardware timer built into the Cortex-M processor**. It contains a **24-bit decrementing counter**.
 
 The basic idea is:
 
@@ -317,8 +313,6 @@ Cortex-M processor
        ├── reload register
        └── 24-bit counter
 ```
-
-
 
 - - -
 
