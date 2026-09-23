@@ -24,8 +24,6 @@ A useful way to see the relationship is:
 
 ![](/uploads/level.png)
 
-
-
 - - -
 
 ## What is `SystemCoreClock`?
@@ -120,8 +118,6 @@ every 10 ms
 every 100 ms
 ```
 
-This makes it useful for implementing a system clock.
-
 - - -
 
 ## SysTick Registers
@@ -142,9 +138,7 @@ These expressions are software interfaces, but they correspond to actual registe
 
 `CTRL` is the **control register**.
 
-It controls how SysTick operates.
-
-Among other things, it can:
+It controls how SysTick operates:
 
 * enable or disable the SysTick counter
 * enable the SysTick interrupt
@@ -176,20 +170,6 @@ SysTick->LOAD = N - 1;
 then the counter counts for approximately `N` clock cycles.
 
 This is because the counter includes zero when counting down.
-
-For example:
-
-```text
-LOAD = 4
-
-4
-3
-2
-1
-0
-```
-
-This corresponds to five counter states.
 
 - - -
 
@@ -223,18 +203,8 @@ After reaching zero, the counter reloads and begins another interval.
 
 This distinction was initially confusing to me.
 
-`SystemCoreClock` and SysTick are related, but they are not the same thing.
-
-```text
-SystemCoreClock
-    =
-software variable describing the system frequency
-
-
-SysTick
-    =
-hardware timer that uses a clock to count
-```
+* SystemCoreClock = software variable describing the system frequency
+* SysTick = hardware timer that uses a clock to count
 
 For example, if:
 
@@ -246,18 +216,6 @@ the processor is operating with a system frequency of 16 MHz.
 
 SysTick can then use that clock frequency to determine how many processor clock cycles correspond to a desired time interval.
 
-So the relationship is approximately:
-
-```text
-System clock frequency
-        ↓
-SystemCoreClock records it
-        ↓
-SysTick uses clock cycles
-        ↓
-LOAD determines how many cycles form one interval
-```
-
 - - -
 
 ## CMSIS System Functions
@@ -266,29 +224,11 @@ CMSIS also defines functions related to the system clock configuration.
 
 ### `SystemCoreClockUpdate()`
 
-```c
-void SystemCoreClockUpdate(void);
-```
-
-This function updates the value stored in:
-
-```c
-SystemCoreClock
-```
-
-so that the software variable reflects the current clock configuration.
-
-- - -
+This function updates the value stored in SystemCoreClock
 
 ### `SystemInit()`
 
-```c
-void SystemInit(void);
-```
-
-This function performs low-level system initialization.
-
-It is normally called during startup before the main application begins.
+This function performs low-level system initialization. It is normally called during startup before the main application begins.
 
 - - -
 
@@ -303,54 +243,7 @@ SysTickEnable();
 SysTickIntEnable();
 ```
 
-These are not the same type of interface as:
-
-```c
-SysTick->LOAD
-SysTick->CTRL
-```
-
-They are higher-level library functions provided by the microcontroller vendor's software library.
-
-For example:
-
-```c
-SysTickPeriodSet(...);
-```
-
-ultimately configures the SysTick hardware.
-
-Conceptually:
-
-```text
-SysTickPeriodSet(...)
-        ↓
-library implementation
-        ↓
-write a SysTick register
-        ↓
-SysTick hardware changes behavior
-```
-
-Therefore, there may be multiple software interfaces for controlling the **same hardware**.
-
-For example:
-
-```text
-                 SysTick hardware
-                       ↑
-             ┌─────────┴─────────┐
-             │                   │
-        CMSIS interface      Vendor library
-             │                   │
-      SysTick->LOAD       SysTickPeriodSet()
-```
-
-This was the part I initially found confusing: both appear as C code, but they belong to different software abstraction layers.
-
-- - -
-
-## APIs Used in the Textbook
+They are library functions provided by the microcontroller vendor's software library.
 
 ### `SysTickPeriodSet()`
 
@@ -362,8 +255,6 @@ Sets the number of clock cycles in one SysTick period.
 
 `SysCtlClockGet()` obtains the current system clock frequency, and the result is used to calculate the desired SysTick interval.
 
-- - -
-
 ### `SysTickIntRegister()`
 
 ```c
@@ -372,25 +263,9 @@ SysTickIntRegister(&countDown);
 
 Registers the interrupt service routine by providing a function pointer.
 
-For example:
-
-```c
-countDown
-```
-
-is the function that should execute when the SysTick interrupt occurs.
-
-- - -
-
 ### `SysTickEnable()`
 
-```c
-SysTickEnable();
-```
-
 Enables the SysTick counter so that it begins counting.
-
-- - -
 
 ### `SysTickIntEnable()`
 
@@ -443,19 +318,7 @@ Cortex-M processor
        └── 24-bit counter
 ```
 
-The important distinction is that **SysTick is hardware**, while expressions such as:
 
-```c
-SysTick->LOAD
-```
-
-and functions such as:
-
-```c
-SysTickPeriodSet()
-```
-
-are software interfaces used to control that hardware.
 
 - - -
 
