@@ -3,7 +3,7 @@ title: What is `SystemCoreClock` and How Does It Relate to SysTick?
 seoTitle: ""
 description: From a HW of 249A.
 pubDate: 2026-09-23
-updatedDate: ""
+updatedDate: 2026-09-23
 tags:
   - Study Notes
   - EnbeddedSystem
