@@ -3,6 +3,7 @@ title: What is SystemCoreClock and how to use it
 seoTitle: ""
 description: From a HW of 249A.
 pubDate: 2026-09-23
+updatedDate: ""
 tags:
   - Notes
   - EnbeddedSystem
@@ -32,7 +33,8 @@ As a part of Armv8-M architecture, the architecture provides an in-built **syste
 > > Sets the 24-bit wrap-around value. Because the timer counts down to 0 (inclusive), the actual number of clock cycles per interval is LOAD + 1. To get N cycles, set LOAD to N - 1.
 >
 > SysTick->VAL
->
+>>Current value for the countdown, tnce it counts down to 0, the next clock edge reloads it with the value specified in SysTick->LOAD
+
 > void SystemCoreClockUpdate (void) 
 >
 > > Function to update the variable SystemCoreClock.
@@ -41,7 +43,7 @@ As a part of Armv8-M architecture, the architecture provides an in-built **syste
 >
 > > Function to Initialize the system.
 
-## APIs by Luminary MicroR (2008c)
+### APIs by Luminary MicroR (2008c)
 
 > SysTickPeriodSet(SysCtlClockGet() / 1000);
 >
